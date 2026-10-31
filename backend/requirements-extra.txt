@@ -1,0 +1,2 @@
+# Optional: local speech-to-text for long-answer recall (POST /recall/transcribe)
+faster-whisper>=1.0
