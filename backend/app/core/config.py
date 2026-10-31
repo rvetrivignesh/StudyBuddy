@@ -22,7 +22,8 @@ class Settings(BaseSettings):
     mongo_db: str = "study_companion"
 
     # vector store
-    qdrant_url: str = "http://localhost:6333"
+    qdrant_url: str | None = None
+    qdrant_path: str | None = "./data/qdrant_storage"
     qdrant_collection: str = "study_chunks"
     embedding_dim: int = 768
 

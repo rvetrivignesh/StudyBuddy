@@ -18,7 +18,10 @@ class Hit:
 
 class VectorStore:
     def __init__(self) -> None:
-        self.client = AsyncQdrantClient(url=settings.qdrant_url)
+        if settings.qdrant_path:
+            self.client = AsyncQdrantClient(path=settings.qdrant_path)
+        else:
+            self.client = AsyncQdrantClient(url=settings.qdrant_url or "http://localhost:6333")
         self.collection = settings.qdrant_collection
         self._ready = False
 
@@ -30,8 +33,9 @@ class VectorStore:
                 self.collection,
                 vectors_config=models.VectorParams(size=settings.embedding_dim, distance=models.Distance.COSINE),
             )
-        for field in ("user_id", "subject_id", "doc_id"):
-            await self.client.create_payload_index(self.collection, field, models.PayloadSchemaType.KEYWORD)
+        if not settings.qdrant_path:
+            for field in ("user_id", "subject_id", "doc_id"):
+                await self.client.create_payload_index(self.collection, field, models.PayloadSchemaType.KEYWORD)
         self._ready = True
 
     async def upsert(self, points: list[dict]) -> None:

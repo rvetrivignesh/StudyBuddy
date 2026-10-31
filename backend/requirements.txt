@@ -16,6 +16,7 @@ bcrypt>=4.1
 
 # --- AI: LLM gateway, vector DB, document parsing ---
 litellm>=1.50
+mcp>=2.0
 qdrant-client>=1.12
 pymupdf>=1.24
 python-docx>=1.1

@@ -5,6 +5,7 @@ import os
 import re
 from typing import Any, TypeVar
 
+os.environ.setdefault("LITELLM_LOCAL_MODEL_COST_MAP", "True")
 import litellm
 from pydantic import BaseModel, ValidationError
 
@@ -42,7 +43,7 @@ class LLMClient:
     def __init__(self) -> None:
         for env_name, value in (("GROQ_API_KEY", settings.groq_api_key), ("GEMINI_API_KEY", settings.gemini_api_key)):
             if value:
-                os.environ.setdefault(env_name, value)
+                os.environ[env_name] = value
 
     @staticmethod
     def _provider_kwargs(model: str) -> dict[str, Any]:
@@ -74,6 +75,7 @@ class LLMClient:
             "messages": self._prepare(model, messages),
             "temperature": temperature,
             "timeout": settings.llm_timeout,
+            "_skip_mcp_handler": True,
             **self._provider_kwargs(model),
         }
         if tools:
