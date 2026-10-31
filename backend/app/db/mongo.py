@@ -11,7 +11,13 @@ _client: AsyncMongoClient | None = None
 
 def connect() -> None:
     global _client
-    _client = AsyncMongoClient(settings.mongo_uri, tz_aware=True)
+    kwargs = {"tz_aware": True}
+    try:
+        import certifi
+        kwargs["tlsCAFile"] = certifi.where()
+    except ImportError:
+        pass
+    _client = AsyncMongoClient(settings.mongo_uri, **kwargs)
 
 
 async def close() -> None:

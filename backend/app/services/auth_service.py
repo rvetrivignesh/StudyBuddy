@@ -12,7 +12,8 @@ class AuthService:
         email = body.email.lower()
         if await self.users.get_by_email(email):
             raise ConflictError("Email already registered")
-        user = await self.users.insert({"email": email, "name": body.name, "password_hash": hash_password(body.password)})
+        name = body.name or email.split("@")[0]  # fall back to email prefix if name omitted
+        user = await self.users.insert({"email": email, "name": name, "password_hash": hash_password(body.password)})
         return Token(access_token=create_access_token(user["id"]))
 
     async def login(self, email: str, password: str) -> Token:

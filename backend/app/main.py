@@ -19,7 +19,11 @@ logger = logging.getLogger(__name__)
 async def lifespan(app: FastAPI):
     setup_logging()
     mongo.connect()
-    await mongo.ensure_indexes()  # fail fast if MongoDB is unreachable
+    try:
+        await mongo.ensure_indexes()
+        logger.info("MongoDB connected and indexes ensured")
+    except Exception as e:
+        logger.warning("MongoDB not reachable at startup (%s); will retry on first request", e)
     try:
         await get_vector_store().ensure_collection()
     except Exception:
